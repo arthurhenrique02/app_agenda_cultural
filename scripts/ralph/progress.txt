@@ -1,0 +1,28 @@
+# Ralph Progress Log
+Started: Fri Apr 10 09:23:32 PM -03 2026
+---
+
+## Codebase Patterns
+- Backend uses `uv` as Python package manager (not pip/poetry). Run `uv run pytest`, `uv run ruff check .`, `uv run black .`.
+- pytest-asyncio is configured with `asyncio_mode = "auto"` in pyproject.toml - no need for explicit `@pytest.mark.asyncio` decorator (though it still works).
+- Use `ASGITransport` from httpx to test FastAPI endpoints without starting a real server.
+- Dev dependencies go in `[dependency-groups] dev = [...]` section (uv's format), not `[project.optional-dependencies]`.
+
+---
+
+## 2026-04-11 - US-001
+- What was implemented: FastAPI backend skeleton with health check endpoint (`GET /health`), pytest test harness, quality tools (ruff, black) configured in pyproject.toml
+- Files changed:
+  - `backend/pyproject.toml` - project config with all dependencies and tool config
+  - `backend/app/__init__.py` - package init
+  - `backend/app/main.py` - FastAPI app with health route
+  - `backend/tests/__init__.py` - test package init
+  - `backend/tests/test_health.py` - health check test (TDD red→green cycle)
+  - `backend/.gitignore` - excludes pycache, .venv, etc.
+  - `backend/uv.lock` - lockfile
+- **Learnings for future iterations:**
+  - uv creates `[dependency-groups]` section (not `[project.optional-dependencies]`) for dev deps
+  - pytest-asyncio 1.3.0 uses `asyncio_mode = "auto"` config key
+  - httpx `ASGITransport` is the correct way to create in-process test clients for FastAPI
+  - Python version pinned to 3.12 via `.python-version` file
+---
