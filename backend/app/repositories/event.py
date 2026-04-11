@@ -136,6 +136,20 @@ async def list_admin_events_paginated(
     return list(result.scalars().all()), total, pages
 
 
+async def count_events_by_status(session: AsyncSession) -> dict[str, int]:
+    """Return total event count and breakdown by status."""
+    result = await session.execute(
+        select(Event.status, func.count()).group_by(Event.status)
+    )
+    counts: dict[str, int] = {}
+    total = 0
+    for status_val, count in result.all():
+        counts[status_val] = count
+        total += count
+    counts["total"] = total
+    return counts
+
+
 async def delete_event(session: AsyncSession, event: Event) -> None:
     """Permanently delete an event row."""
     await session.delete(event)

@@ -9,6 +9,22 @@ from app.models.category import Category
 from app.models.event import EventStatus
 from app.models.user import User
 from app.repositories import event as event_repo
+from app.repositories import user as user_repo
+from app.schemas.event import DashboardResponse
+
+
+async def get_dashboard_stats(session: AsyncSession) -> DashboardResponse:
+    """Compute dashboard counters for admin overview."""
+    counts = await event_repo.count_events_by_status(session)
+    total_users = await user_repo.count_users(session)
+    return DashboardResponse(
+        total_events=counts.get("total", 0),
+        pendente=counts.get(EventStatus.pendente, 0),
+        aprovado=counts.get(EventStatus.aprovado, 0),
+        rejeitado=counts.get(EventStatus.rejeitado, 0),
+        cancelado=counts.get(EventStatus.cancelado, 0),
+        total_users=total_users,
+    )
 
 
 async def list_pending_events(

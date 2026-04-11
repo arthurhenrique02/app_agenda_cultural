@@ -8,6 +8,7 @@ from app.dependencies.database import get_db
 from app.models.event import EventStatus
 from app.models.user import User
 from app.schemas.event import (
+    DashboardResponse,
     EventResponse,
     EventUpdateRequest,
     PaginatedEventsResponse,
@@ -16,6 +17,15 @@ from app.schemas.event import (
 from app.services import admin as admin_service
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
+
+
+@router.get("/dashboard", response_model=DashboardResponse)
+async def get_dashboard(
+    _: User = Depends(require_admin),
+    session: AsyncSession = Depends(get_db),
+) -> DashboardResponse:
+    """Return admin dashboard counters."""
+    return await admin_service.get_dashboard_stats(session)
 
 
 @router.get("/events/pending", response_model=PaginatedEventsResponse)

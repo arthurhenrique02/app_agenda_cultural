@@ -1,6 +1,6 @@
 """User repository — all direct DB access for the users table."""
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
@@ -30,6 +30,12 @@ async def create_user(
     await session.commit()
     await session.refresh(user)
     return user
+
+
+async def count_users(session: AsyncSession) -> int:
+    """Return total number of users."""
+    result = await session.execute(select(func.count()).select_from(User))
+    return int(result.scalar_one())
 
 
 async def update_user(
