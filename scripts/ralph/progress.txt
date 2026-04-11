@@ -146,3 +146,19 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
   - `pydantic[email]` (email-validator) required for EmailStr field type
   - Layered structure: router calls service, service calls repository — no business logic in routers
 ---
+
+## 2026-04-11 - US-009
+- What was implemented: POST /api/auth/login endpoint returning JWT access token (15 min) and refresh token (7 days); 401 on invalid credentials; new JWT utility module in app/security/jwt.py; LoginRequest and TokenResponse schemas; login_user service function
+- Files changed:
+  - `backend/app/security/jwt.py` - new module with `create_access_token` and `create_refresh_token` using PyJWT + HS256
+  - `backend/app/schemas/auth.py` - added `LoginRequest` and `TokenResponse` schemas
+  - `backend/app/services/auth.py` - added `login_user` function with credential validation
+  - `backend/app/routers/auth.py` - added `POST /api/auth/login` route
+  - `backend/tests/test_auth_login.py` - 7 tests (TDD red→green)
+- **Learnings for future iterations:**
+  - PyJWT is `import jwt` (not `import pyjwt`) — use `jwt.encode(payload, key, algorithm=ALGORITHM)`
+  - Use `datetime.now(UTC)` (Python 3.11+ alias) — ruff UP017 flags `timezone.utc`; auto-fixable with `ruff check --fix`
+  - JWT `sub` claim should be a string — use `str(user.id)` not the int directly
+  - Token type claim (`token_type: "access"/"refresh"`) lets downstream code distinguish access from refresh tokens
+  - Test helper function `_login_body(user)` avoids line-too-long (E501) when building repeated request dicts
+---
