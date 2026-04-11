@@ -9,6 +9,11 @@ from app.config import settings
 ALGORITHM = "HS256"
 
 
+def decode_token(token: str) -> dict:
+    """Decode and validate a JWT. Raises jwt.PyJWTError on invalid/expired tokens."""
+    return jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
+
+
 def create_access_token(subject: str) -> str:
     """Create a JWT access token valid for ACCESS_TOKEN_EXPIRE_MINUTES minutes."""
     expire = datetime.now(UTC) + timedelta(minutes=settings.access_token_expire_minutes)

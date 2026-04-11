@@ -4,7 +4,13 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies.database import get_db
-from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse
+from app.schemas.auth import (
+    AccessTokenResponse,
+    LoginRequest,
+    RefreshRequest,
+    RegisterRequest,
+    TokenResponse,
+)
 from app.schemas.user import UserResponse
 from app.services import auth as auth_service
 
@@ -41,3 +47,12 @@ async def login(
         email=body.email,
         password=body.password,
     )
+
+
+@router.post("/refresh", response_model=AccessTokenResponse)
+async def refresh(
+    body: RefreshRequest,
+    session: AsyncSession = Depends(get_db),
+) -> AccessTokenResponse:
+    """Validate refresh token and return a new access token."""
+    return await auth_service.refresh_access_token(session, body.refresh_token)
