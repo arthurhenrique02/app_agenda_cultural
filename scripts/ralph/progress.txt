@@ -110,3 +110,16 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
   - `server_default` must be a string literal for simple values; `func.now()` works for timestamps
   - Always run `ruff check --fix` + `black .` before committing to catch import order (I001) issues
 ---
+
+## 2026-04-11 - US-007
+- What was implemented: `app/security/password.py` module with `hash_password` and `verify_password` using argon2-cffi's `PasswordHasher`; 7 tests covering hash uniqueness, format check, correct/wrong verification, empty password
+- Files changed:
+  - `backend/app/security/__init__.py` - new security package
+  - `backend/app/security/password.py` - `hash_password` + `verify_password`
+  - `backend/tests/test_password.py` - 7 tests (TDD red→green)
+- **Learnings for future iterations:**
+  - `argon2-cffi` is already in project deps; use `from argon2 import PasswordHasher` and `from argon2.exceptions import VerifyMismatchError`
+  - `PasswordHasher().verify(hashed, plain)` raises `VerifyMismatchError` on mismatch — catch it and return False
+  - Each `hash()` call produces a unique salt, so the same password hashes differently each time (expected)
+  - Hash output starts with `$argon2` — use this to verify the correct algorithm is being used
+---
