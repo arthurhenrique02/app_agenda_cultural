@@ -13,6 +13,8 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - Alembic env.py uses `asyncio.run(run_async_migrations())` + `async_engine_from_config` for online mode; offline mode is sync and works for SQL generation tests.
 - Test Alembic offline SQL generation by running subprocess `alembic upgrade head --sql` with a dummy DATABASE_URL (no real DB needed).
 - All model classes must inherit from `app.models.base.Base` (DeclarativeBase); import `app.models` in env.py for autogenerate to detect all tables.
+- Shared test fixtures live in `backend/tests/conftest.py`. Use `db_session` for an isolated AsyncSession (SQLite in-memory) and `async_client` for an httpx client wired to the FastAPI app with DB overridden.
+- The `async_client` fixture internally overrides `db_module.AsyncSessionLocal` to redirect all DB operations to the test SQLite engine.
 
 ---
 
@@ -62,6 +64,18 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
   - Offline mode (`alembic upgrade head --sql`) does not need asyncio — it's purely sync and works in any environment.
   - Always import all model modules in env.py before referencing `Base.metadata` so autogenerate detects all tables.
   - Baseline migration is intentionally empty — it just creates the alembic_version table on first `upgrade head`.
+---
+
+## 2026-04-11 - US-005
+- What was implemented: Shared pytest fixtures in `conftest.py` providing `db_session` (isolated in-memory AsyncSession) and `async_client` (httpx AsyncClient wired to FastAPI app with DB override); 5 tests in `test_fixtures.py` verifying both fixtures
+- Files changed:
+  - `backend/tests/conftest.py` - `db_session` and `async_client` fixtures
+  - `backend/tests/test_fixtures.py` - 5 tests using the fixtures (TDD red→green)
+- **Learnings for future iterations:**
+  - `conftest.py` fixtures are auto-discovered by pytest — no import needed in test files
+  - `db_session` creates a fresh `sqlite+aiosqlite:///:memory:` engine per test for isolation
+  - `async_client` overrides `db_module.AsyncSessionLocal` so the app's `get_db` dependency uses the test engine
+  - Always restore `db_module.AsyncSessionLocal` in a `finally` block to avoid cross-test contamination
 ---
 
 ## 2026-04-11 - US-002
