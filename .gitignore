@@ -9,3 +9,8 @@ __pycache__/
 dist/
 build/
 .env
+.claude
+CLAUDE.*
+PROMPT.*
+.claude*
+.devcontainer/
