@@ -2,6 +2,18 @@
 Started: Fri Apr 10 09:23:32 PM -03 2026
 ---
 
+## 2026-04-11 - US-013
+- What was implemented: `app/seed.py` with async `seed_admin(session)` function that creates `admin@agendacultural.com` with role=admin; idempotent (skips if user already exists); password read from `settings.admin_default_password` (env var ADMIN_DEFAULT_PASSWORD); also exposes `__main__` entry point for CLI usage
+- Files changed:
+  - `backend/app/seed.py` - new seed module with `seed_admin()` async function
+  - `backend/tests/test_seed.py` - 5 tests covering creation, password hashing, idempotency, env var password, and name field
+- **Learnings for future iterations:**
+  - Seed function follows the pattern: check-if-exists → create → promote. Use `get_user_by_email` to check idempotency.
+  - `create_user` uses the default role `user`; to set `admin`, update `user.role` after creation and `await session.commit()` again.
+  - `monkeypatch.setattr(seed_module.settings, "admin_default_password", "...")` works to override settings in tests since `settings` is a module-level singleton.
+  - The seed module can be run directly: `uv run python -m app.seed` (uses `if __name__ == "__main__"` block).
+---
+
 ## 2026-04-11 - US-012
 - What was implemented: GET /api/users/me (already existed from US-011) + PUT /api/users/me for updating name/email; duplicate email check returns 400; 8 tests covering GET, PUT, auth required, partial update, no password hash exposure, duplicate email
 - Files changed:
