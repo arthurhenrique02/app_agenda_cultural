@@ -5,7 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.repositories import user as user_repo
-from app.security.password import hash_password
+from app.schemas.auth import TokenResponse
+from app.security.jwt import create_access_token, create_refresh_token
+from app.security.password import hash_password, verify_password
 
 
 async def register_user(
@@ -25,4 +27,23 @@ async def register_user(
     hashed = hash_password(password)
     return await user_repo.create_user(
         session, name=name, email=email, hashed_password=hashed
+    )
+
+
+async def login_user(session: AsyncSession, email: str, password: str) -> TokenResponse:
+    """Authenticate a user and return access + refresh tokens.
+
+    Raises HTTP 401 if credentials are invalid.
+    """
+    user = await user_repo.get_user_by_email(session, email)
+    if user is None or not verify_password(password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials.",
+        )
+
+    subject = str(user.id)
+    return TokenResponse(
+        access_token=create_access_token(subject),
+        refresh_token=create_refresh_token(subject),
     )
