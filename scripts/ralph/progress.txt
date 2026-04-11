@@ -19,6 +19,9 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - All model classes must inherit from `app.models.base.Base` (DeclarativeBase); import `app.models` in env.py for autogenerate to detect all tables.
 - Shared test fixtures live in `backend/tests/conftest.py`. Use `db_session` for an isolated AsyncSession (SQLite in-memory) and `async_client` for an httpx client wired to the FastAPI app with DB overridden.
 - The `async_client` fixture internally overrides `db_module.AsyncSessionLocal` to redirect all DB operations to the test SQLite engine.
+- `get_db` in `dependencies/database.py` must use `import app.database as db_module` and call `db_module.AsyncSessionLocal()` — NOT `from app.database import AsyncSessionLocal` — so test fixtures can swap the factory via module attribute.
+- Use `async_client_with_tables` fixture (also in conftest.py) for tests that need actual ORM models: it runs `Base.metadata.create_all` on the test SQLite engine before yielding the client.
+- `pydantic[email]` (email-validator) must be installed for `EmailStr` to work: `uv add "pydantic[email]"`.
 
 ---
 
@@ -122,4 +125,24 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
   - `PasswordHasher().verify(hashed, plain)` raises `VerifyMismatchError` on mismatch — catch it and return False
   - Each `hash()` call produces a unique salt, so the same password hashes differently each time (expected)
   - Hash output starts with `$argon2` — use this to verify the correct algorithm is being used
+---
+
+## 2026-04-11 - US-008
+- What was implemented: POST /api/auth/register endpoint; user registration with duplicate email check (400); response excludes hashed_password; created layers: schemas/auth.py, schemas/user.py, repositories/user.py, services/auth.py, routers/auth.py; router registered in main.py
+- Files changed:
+  - `backend/app/schemas/auth.py` - RegisterRequest schema (name, email, password)
+  - `backend/app/schemas/user.py` - UserResponse schema (excludes hashed_password)
+  - `backend/app/repositories/user.py` - get_user_by_email, create_user
+  - `backend/app/services/auth.py` - register_user with duplicate email check
+  - `backend/app/routers/auth.py` - POST /api/auth/register route
+  - `backend/app/main.py` - include auth_router
+  - `backend/app/dependencies/database.py` - fixed to use module-level attribute lookup
+  - `backend/tests/conftest.py` - added async_client_with_tables fixture
+  - `backend/tests/test_auth_register.py` - 7 tests (TDD red→green)
+  - `backend/pyproject.toml` / `backend/uv.lock` - added pydantic[email] dep
+- **Learnings for future iterations:**
+  - `get_db` must reference `db_module.AsyncSessionLocal` via module import, not `from ... import AsyncSessionLocal`, so test fixtures can override it
+  - `async_client_with_tables` fixture needed when tests require ORM tables (runs create_all on SQLite in-memory)
+  - `pydantic[email]` (email-validator) required for EmailStr field type
+  - Layered structure: router calls service, service calls repository — no business logic in routers
 ---
