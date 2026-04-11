@@ -79,6 +79,7 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - `pydantic[email]` (email-validator) must be installed for `EmailStr` to work: `uv add "pydantic[email]"`.
 - Category seeding should load existing category names once (`select(Category.name)`) and insert only missing names before a single commit.
 - For collection endpoints that must answer on a path without trailing slash (e.g., `/api/categories`), declare router path as `""` instead of `"/"` to avoid 307 redirects in API tests.
+- Keep SQLAlchemy StrEnum values and Alembic enum literals strictly synchronized for the same column (e.g., event statuses) to avoid runtime/migration drift.
 
 ---
 
@@ -248,4 +249,18 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - **Learnings for future iterations:**
   - For endpoint tests that need seeded data with `async_client_with_tables`, insert rows through `db_module.AsyncSessionLocal()` while the fixture override is active.
   - Keep categories endpoint public (no auth dependency) and return consistent model serialization via `model_validate` from ORM objects.
+---
+
+## 2026-04-11 - US-016
+- What was implemented: Added `Event` model with full lifecycle/status fields, moderation fields (`reviewed_by`, `reviewed_at`), and required indexes (`status`, `date`, `category_id`, `created_by`); created Alembic migration to persist the events table with FKs to users/categories and status enum.
+- Files changed:
+  - `backend/app/models/event.py` - new `Event` model and `EventStatus` StrEnum
+  - `backend/app/models/__init__.py` - exports `Event` and `EventStatus`
+  - `backend/alembic/versions/d4e5f6a7b8c9_add_events_table.py` - migration creating events table and required indexes
+  - `backend/tests/test_event_model.py` - model tests for fields, enum values, defaults, review metadata, and indexes
+  - `backend/tests/test_event_migration.py` - migration tests for file existence and offline SQL index/table generation
+  - `scripts/ralph/prd.json` - marked US-016 as passed
+- **Learnings for future iterations:**
+  - For cross-cutting enum fields, validate both ORM model metadata and offline Alembic SQL to ensure schema + migration alignment.
+  - Add index checks at model level (`Event.__table__.indexes`) to catch missing index declarations early in TDD.
 ---
