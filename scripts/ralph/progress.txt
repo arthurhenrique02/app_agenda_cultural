@@ -314,3 +314,17 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
   - `count_events_by_status` groups by `Event.status` and returns a dict keyed by status enum values — use `.get(EventStatus.xxx, 0)` to safely default missing statuses to 0.
   - Register dashboard endpoint before dynamic `/events/{id}` routes to avoid path capture conflicts (same pattern as `/me` and `/search`).
 ---
+
+## 2026-04-11 - US-034
+- What was implemented: Added `GET /api/admin/users` (paginated user list) and `PATCH /api/admin/users/{id}/promote` (upgrade user role to admin). Both endpoints require admin role. Full TDD cycle with 10 tests covering auth guards (401/403), paginated listing, password exclusion, promotion, 404 for nonexistent user, and idempotent promotion of already-admin users.
+- Files changed:
+  - `backend/app/repositories/user.py` - added `list_users_paginated` and `promote_user` functions
+  - `backend/app/schemas/user.py` - added `PaginatedUsersResponse` schema
+  - `backend/app/services/admin.py` - added `list_users` and `promote_user` service functions
+  - `backend/app/routers/admin.py` - added `GET /api/admin/users` and `PATCH /api/admin/users/{id}/promote` endpoints
+  - `backend/tests/test_admin_users.py` - 10 tests (TDD red→green)
+- **Learnings for future iterations:**
+  - Register `/users` and `/users/{id}/promote` routes before dynamic `/events/{id}` routes in the admin router to avoid path conflicts.
+  - Promote is idempotent — promoting an already-admin user simply returns the same admin role without error.
+  - `PaginatedUsersResponse` follows the same contract shape as `PaginatedEventsResponse` for consistency.
+---
