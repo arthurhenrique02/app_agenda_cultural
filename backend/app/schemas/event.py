@@ -2,7 +2,7 @@
 
 import datetime as dt
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.event import EventStatus
 
@@ -63,3 +63,53 @@ class EventResponse(BaseModel):
     updated_at: dt.datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class PublicEventResponse(BaseModel):
+    """Public response representation for approved events endpoints."""
+
+    id: int
+    title: str
+    description: str
+    date: dt.date
+    start_time: dt.time
+    end_time: dt.time | None
+    venue_name: str
+    address: str
+    neighborhood: str
+    city: str
+    image_url: str | None
+    status: str
+    rejection_reason: str | None
+    category_id: int
+    created_by: int
+    reviewed_by: int | None
+    reviewed_at: dt.datetime | None
+    created_at: dt.datetime
+    updated_at: dt.datetime
+
+
+class PaginatedEventsResponse(BaseModel):
+    """Paginated list contract for authenticated/admin event lists."""
+
+    items: list[EventResponse]
+    total: int
+    page: int
+    per_page: int
+    pages: int
+
+
+class PaginatedPublicEventsResponse(BaseModel):
+    """Paginated list contract for public events endpoints."""
+
+    items: list[PublicEventResponse]
+    total: int
+    page: int
+    per_page: int
+    pages: int
+
+
+class RejectEventRequest(BaseModel):
+    """Payload for rejecting an event in admin moderation."""
+
+    reason: str = Field(min_length=1)

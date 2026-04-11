@@ -81,6 +81,7 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - For collection endpoints that must answer on a path without trailing slash (e.g., `/api/categories`), declare router path as `""` instead of `"/"` to avoid 307 redirects in API tests.
 - Keep SQLAlchemy StrEnum values and Alembic enum literals strictly synchronized for the same column (e.g., event statuses) to avoid runtime/migration drift.
 - Enforce ownership in service-layer helper functions (not routers) so update/delete rules stay centralized and reusable across endpoints.
+- In FastAPI, register fixed GET paths like `/me` and `/search` before dynamic `/{id}` GET routes to avoid 422 path-parameter capture conflicts.
 
 ---
 
@@ -279,4 +280,23 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - **Learnings for future iterations:**
   - Use a single service helper (`_get_owned_event_or_raise`) to enforce owner checks consistently for update/delete mutations.
   - For delete semantics that keep audit history, soft-cancel (`status=cancelado`) keeps admin visibility while preventing accidental hard-loss.
+---
+
+## 2026-04-11 - US-022 to US-032
+- What was implemented: Completed public and admin event management endpoints. Public side: `GET /api/events` with pagination and filters, `GET /api/events/search` with DB text search and pagination, `GET /api/events/{id}` with visibility guard, and public status mapping to `encerrado` for past approved events. Admin side: role-based guard `require_admin`, pending list, approve/reject moderation actions, all-events list with status filter, and admin update/delete of any event.
+- Files changed:
+  - `backend/app/dependencies/auth.py` - added `require_admin` dependency
+  - `backend/app/schemas/event.py` - added public and paginated response schemas, reject payload schema
+  - `backend/app/repositories/event.py` - added paginated approved/admin listing, filters, search, and delete helpers
+  - `backend/app/services/event.py` - added public list/search/detail business logic and public status projection
+  - `backend/app/services/admin.py` - new admin moderation and event management service module
+  - `backend/app/routers/events.py` - added public list/search/detail routes
+  - `backend/app/routers/admin.py` - new admin event management routes
+  - `backend/app/main.py` - registered admin router
+  - `backend/tests/test_events_public.py` - tests for public list/filter/search/detail and encerrado behavior
+  - `backend/tests/test_admin_events.py` - tests for admin role guard, moderation, filtering, update/delete
+  - `scripts/ralph/prd.json` - marked US-022 through US-032 as passed
+- **Learnings for future iterations:**
+  - Keep public response projection separate from internal ORM enum fields when product rules require display-only states like `encerrado`.
+  - Reuse the same paginated contract shape (`items`, `total`, `page`, `per_page`, `pages`) across public and admin endpoints to simplify client integration and contract tests.
 ---

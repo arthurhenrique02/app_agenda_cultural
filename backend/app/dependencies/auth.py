@@ -6,7 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies.database import get_db
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.repositories import user as user_repo
 from app.security.jwt import decode_token
 
@@ -16,6 +16,11 @@ _UNAUTHORIZED = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Not authenticated",
     headers={"WWW-Authenticate": "Bearer"},
+)
+
+_FORBIDDEN = HTTPException(
+    status_code=status.HTTP_403_FORBIDDEN,
+    detail="Not enough permissions.",
 )
 
 
@@ -57,3 +62,10 @@ async def get_current_user(
         raise _UNAUTHORIZED
 
     return user
+
+
+async def require_admin(current_user: User = Depends(get_current_user)) -> User:
+    """Ensure the authenticated user has admin role."""
+    if current_user.role != UserRole.admin:
+        raise _FORBIDDEN
+    return current_user
