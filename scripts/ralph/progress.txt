@@ -328,3 +328,15 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
   - Promote is idempotent — promoting an already-admin user simply returns the same admin role without error.
   - `PaginatedUsersResponse` follows the same contract shape as `PaginatedEventsResponse` for consistency.
 ---
+
+## 2026-04-11 - US-035
+- What was implemented: `StorageService` class in `app/services/storage.py` providing S3-compatible upload and delete abstraction for SeaweedFS; `get_storage_service()` factory function creating instances from app settings; 7 unit tests using mock boto3 client.
+- Files changed:
+  - `backend/app/services/storage.py` - new storage service module with `StorageService` class and `get_storage_service` factory
+  - `backend/tests/test_storage.py` - 7 tests covering init, boto3 client creation, upload (put_object), delete (delete_object), public URL generation, and settings integration
+- **Learnings for future iterations:**
+  - Storage config vars (`storage_endpoint`, `storage_access_key`, `storage_secret_key`, `storage_bucket`) are already in `app/config.py` — no need to add them.
+  - `boto3` is already a project dependency — no `uv add` needed.
+  - Public URL format for SeaweedFS: `{endpoint}/{bucket}/{key}` — same as MinIO path-style access.
+  - Use `unittest.mock.patch("app.services.storage.boto3")` to mock the boto3 module in storage service tests.
+---
