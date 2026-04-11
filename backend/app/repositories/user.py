@@ -30,3 +30,20 @@ async def create_user(
     await session.commit()
     await session.refresh(user)
     return user
+
+
+async def update_user(
+    session: AsyncSession,
+    user: User,
+    name: str | None = None,
+    email: str | None = None,
+) -> User:
+    """Update mutable profile fields on *user* and return the updated instance."""
+    if name is not None:
+        user.name = name
+    if email is not None:
+        user.email = email
+    session.add(user)
+    await session.commit()
+    await session.refresh(user)
+    return user

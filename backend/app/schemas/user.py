@@ -18,3 +18,10 @@ class UserResponse(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class UserUpdateRequest(BaseModel):
+    """Fields that a user is allowed to update on their own profile."""
+
+    name: str | None = None
+    email: EmailStr | None = None
