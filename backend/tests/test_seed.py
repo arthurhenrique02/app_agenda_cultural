@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from app.models import Base
 from app.models.user import UserRole
 from app.repositories.user import get_user_by_email
-from app.seed import seed_admin
+from app.seed import seed_admin, seed_default_categories
 
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
@@ -75,3 +75,30 @@ async def test_seed_admin_name_is_set(db: AsyncSession) -> None:
     user = await get_user_by_email(db, "admin@agendacultural.com")
     assert user is not None
     assert user.name  # non-empty
+
+
+async def test_seed_default_categories_creates_expected_set(db: AsyncSession) -> None:
+    """seed_default_categories must create PRD default category names."""
+    from sqlalchemy import select
+
+    from app.models.category import Category
+
+    await seed_default_categories(db)
+
+    result = await db.execute(select(Category.name))
+    names = set(result.scalars().all())
+    assert names == {"show", "exposicao", "peca", "festival", "outro"}
+
+
+async def test_seed_default_categories_is_idempotent(db: AsyncSession) -> None:
+    """Running category seed twice must not create duplicate category rows."""
+    from sqlalchemy import func, select
+
+    from app.models.category import Category
+
+    await seed_default_categories(db)
+    await seed_default_categories(db)
+
+    result = await db.execute(select(func.count()).select_from(Category))
+    count = result.scalar_one()
+    assert count == 5

@@ -77,6 +77,7 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - `get_db` in `dependencies/database.py` must use `import app.database as db_module` and call `db_module.AsyncSessionLocal()` — NOT `from app.database import AsyncSessionLocal` — so test fixtures can swap the factory via module attribute.
 - Use `async_client_with_tables` fixture (also in conftest.py) for tests that need actual ORM models: it runs `Base.metadata.create_all` on the test SQLite engine before yielding the client.
 - `pydantic[email]` (email-validator) must be installed for `EmailStr` to work: `uv add "pydantic[email]"`.
+- Category seeding should load existing category names once (`select(Category.name)`) and insert only missing names before a single commit.
 
 ---
 
@@ -217,3 +218,18 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
   - Token type claim (`token_type: "access"/"refresh"`) lets downstream code distinguish access from refresh tokens
   - Test helper function `_login_body(user)` avoids line-too-long (E501) when building repeated request dicts
 ---
+
+  ## 2026-04-10 - US-014
+  - What was implemented: Added `Category` model and Alembic migration for `categories` table (unique indexed `name`); implemented `seed_default_categories(session)` in `app/seed.py` with idempotent behavior and wired it into seed CLI flow; added model and seed tests for default category insertion and duplicate prevention
+  - Files changed:
+    - `backend/app/models/category.py` - new Category ORM model
+    - `backend/app/models/__init__.py` - exports Category
+    - `backend/alembic/versions/c3d4e5f6a7b8_add_categories_table.py` - migration for categories table
+    - `backend/app/seed.py` - added `DEFAULT_CATEGORIES` and `seed_default_categories`
+    - `backend/tests/test_category_model.py` - model tests for fields, table name, create, unique constraint
+    - `backend/tests/test_seed.py` - seed tests for category defaults and idempotency
+    - `scripts/ralph/prd.json` - marked US-014 as passed
+  - **Learnings for future iterations:**
+    - Keep the category names stable and canonical in seeds/tests: `show`, `exposicao`, `peca`, `festival`, `outro`.
+    - Reuse `seed_default_categories` in setup flows instead of hardcoding category inserts in tests or scripts.
+  ---
