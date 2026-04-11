@@ -2,6 +2,19 @@
 Started: Fri Apr 10 09:23:32 PM -03 2026
 ---
 
+## 2026-04-11 - US-036
+- What was implemented: `POST /api/upload/image` endpoint with authentication, file type validation (jpg/png/webp only), size validation (max 5MB), UUID-based key generation, and StorageService integration. Returns `{"url": "..."}` on success.
+- Files changed:
+  - `backend/app/routers/upload.py` - new upload router with image endpoint
+  - `backend/app/main.py` - registered upload router
+  - `backend/tests/test_upload.py` - 6 tests covering success (png/jpg/webp), auth required, invalid type rejection, and oversize rejection
+- **Learnings for future iterations:**
+  - `create_access_token` expects a string subject — always pass `str(user.id)` not the int directly.
+  - Mock `get_storage_service` at the router module level (`app.routers.upload.get_storage_service`) for upload tests.
+  - FastAPI `UploadFile.content_type` is set by the client — validate it server-side before processing.
+  - Read file data with `await file.read()` then check `len(data)` for size validation (simpler than streaming for 5MB limit).
+---
+
 ## 2026-04-11 - US-013
 - What was implemented: `app/seed.py` with async `seed_admin(session)` function that creates `admin@agendacultural.com` with role=admin; idempotent (skips if user already exists); password read from `settings.admin_default_password` (env var ADMIN_DEFAULT_PASSWORD); also exposes `__main__` entry point for CLI usage
 - Files changed:
