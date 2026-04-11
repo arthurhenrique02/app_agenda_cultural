@@ -2,6 +2,20 @@
 Started: Fri Apr 10 09:23:32 PM -03 2026
 ---
 
+## 2026-04-11 - US-011
+- What was implemented: `get_current_user` FastAPI dependency in `app/dependencies/auth.py`; extracts Bearer token, decodes JWT, validates `token_type == "access"`, looks up user by `sub` claim, returns User or raises 401; added `GET /api/users/me` route as a demo/test endpoint; 6 tests covering all 401 scenarios and successful authenticated access
+- Files changed:
+  - `backend/app/dependencies/auth.py` - new `get_current_user` dependency using `HTTPBearer` + `decode_token`
+  - `backend/app/routers/users.py` - new router with `GET /api/users/me` protected endpoint
+  - `backend/app/main.py` - registered users router
+  - `backend/tests/test_auth_dependency.py` - 6 tests (TDD red→green)
+- **Learnings for future iterations:**
+  - Use `HTTPBearer(auto_error=False)` so the dependency returns `None` instead of auto-raising when no header is present (allows custom 401 error messages)
+  - `HTTPAuthorizationCredentials | None` type annotation handles the optional case from `auto_error=False`
+  - The `get_current_user` dependency can be used in any route: `current_user: User = Depends(get_current_user)`
+  - stdlib `jwt` import must come before third-party imports in ruff's I001 ordering
+---
+
 ## 2026-04-11 - US-010
 - What was implemented: POST /api/auth/refresh endpoint; accepts `refresh_token` in body; validates JWT, checks `token_type == "refresh"`, looks up user by id, returns new access token; 7 tests covering success, invalid token, expired token, access-token-as-refresh, nonexistent user, missing body
 - Files changed:
