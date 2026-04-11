@@ -10,6 +10,9 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - Use `aiosqlite` (dev dep) with `sqlite+aiosqlite:///:memory:` for in-memory async DB tests — avoids needing a real Postgres instance in unit/api tests.
 - SQLAlchemy engine masks passwords in `str(engine.url)`; use `engine.url.render_as_string(hide_password=False)` to compare with the raw settings URL.
 - Override `db_module.AsyncSessionLocal` in tests to swap the session factory without touching the app-level `get_db` dependency.
+- Alembic env.py uses `asyncio.run(run_async_migrations())` + `async_engine_from_config` for online mode; offline mode is sync and works for SQL generation tests.
+- Test Alembic offline SQL generation by running subprocess `alembic upgrade head --sql` with a dummy DATABASE_URL (no real DB needed).
+- All model classes must inherit from `app.models.base.Base` (DeclarativeBase); import `app.models` in env.py for autogenerate to detect all tables.
 
 ---
 
@@ -42,6 +45,23 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
   - `engine.url.render_as_string(hide_password=False)` needed to compare URL — plain `str()` masks the password
   - Swap `db_module.AsyncSessionLocal` in tests to redirect `get_db` to a test SQLite engine without patching FastAPI's DI
   - `aiosqlite` must be installed as a dev dep before using `sqlite+aiosqlite:///:memory:` URLs in tests
+---
+
+## 2026-04-11 - US-004
+- What was implemented: Alembic initialized with async-compatible env.py; `app/models/base.py` with `DeclarativeBase`; baseline migration created (empty — no tables yet); 7 tests verifying config, migration existence, offline SQL generation, and imports
+- Files changed:
+  - `backend/alembic.ini` - Alembic config with script_location and logging
+  - `backend/alembic/env.py` - async-aware env.py using `asyncio.run()` + `async_engine_from_config`
+  - `backend/alembic/script.py.mako` - migration template
+  - `backend/alembic/versions/bcbad57cb74f_baseline.py` - empty baseline migration
+  - `backend/app/models/__init__.py` - package init re-exporting Base
+  - `backend/app/models/base.py` - `DeclarativeBase` subclass
+  - `backend/tests/test_migrations.py` - 7 tests for migration setup
+- **Learnings for future iterations:**
+  - `asyncio.run()` in env.py cannot be called inside an existing event loop (will fail in pytest-asyncio). Test Alembic via subprocess or offline mode only.
+  - Offline mode (`alembic upgrade head --sql`) does not need asyncio — it's purely sync and works in any environment.
+  - Always import all model modules in env.py before referencing `Base.metadata` so autogenerate detects all tables.
+  - Baseline migration is intentionally empty — it just creates the alembic_version table on first `upgrade head`.
 ---
 
 ## 2026-04-11 - US-002
