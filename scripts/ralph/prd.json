@@ -1,0 +1,755 @@
+{
+  "project": "Agenda Cultural",
+  "branchName": "ralph/agenda-cultural-full-build",
+  "description": "Build the full Agenda Cultural platform with test-first incremental stories across backend, web, admin, and mobile.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Initialize backend skeleton",
+      "description": "As a developer, I need a minimal FastAPI skeleton so the project can start implementing stories incrementally.",
+      "acceptanceCriteria": [
+        "Create backend app entrypoint and health route",
+        "Add initial test suite and verify at least one failing-then-passing test cycle",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Add environment-based app config",
+      "description": "As a developer, I need centralized settings so environments can be configured safely.",
+      "acceptanceCriteria": [
+        "Create config module with required env vars",
+        "Add .env.example with documented defaults",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Configure async SQLAlchemy session",
+      "description": "As a developer, I need async DB infrastructure so all routes and data access use non-blocking I/O.",
+      "acceptanceCriteria": [
+        "Create async engine and async sessionmaker",
+        "Add FastAPI dependency to provide AsyncSession",
+        "No sync SQLAlchemy session usage in app code",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Setup Alembic async migrations",
+      "description": "As a developer, I need migration tooling to evolve schema safely.",
+      "acceptanceCriteria": [
+        "Initialize Alembic configuration for project",
+        "Create baseline migration and apply successfully",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Setup pytest async test harness",
+      "description": "As a developer, I need reusable fixtures to run API and service tests consistently.",
+      "acceptanceCriteria": [
+        "Add pytest and pytest-asyncio configuration",
+        "Create async API client and DB fixtures",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Create users table and model",
+      "description": "As a developer, I need a user entity to support authentication and roles.",
+      "acceptanceCriteria": [
+        "Add user model with role and active fields",
+        "Generate and apply migration for users table",
+        "Enforce unique email index",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Implement Argon2 password utilities",
+      "description": "As a developer, I need secure password hashing and verification.",
+      "acceptanceCriteria": [
+        "Add hash_password and verify_password functions",
+        "Store only hashed passwords",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 7,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Add auth register endpoint",
+      "description": "As a visitor, I want to create an account using name, email, and password.",
+      "acceptanceCriteria": [
+        "POST /api/auth/register creates active user",
+        "Duplicate email returns validation error",
+        "Response does not expose password hash",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 8,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Add auth login endpoint",
+      "description": "As a user, I want to log in and receive JWT tokens.",
+      "acceptanceCriteria": [
+        "POST /api/auth/login returns access and refresh token",
+        "Invalid credentials return 401",
+        "Access token expiration is 15 minutes",
+        "Refresh token expiration is 7 days",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 9,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Add auth refresh endpoint",
+      "description": "As an authenticated user, I want to refresh my access token without re-logging.",
+      "acceptanceCriteria": [
+        "POST /api/auth/refresh validates refresh token",
+        "Returns new access token when refresh token is valid",
+        "Invalid refresh token returns 401",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 10,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Add current-user auth dependency",
+      "description": "As a developer, I need reusable auth dependencies to protect routes.",
+      "acceptanceCriteria": [
+        "Implement get_current_user dependency",
+        "Protected route returns 401 without bearer token",
+        "Invalid token returns 401",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 11,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "Add profile read and update endpoints",
+      "description": "As an authenticated user, I want to view and edit my own profile.",
+      "acceptanceCriteria": [
+        "Authenticated user can get own profile",
+        "Authenticated user can update own name and email",
+        "Anonymous access returns 401",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 12,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Seed first admin user",
+      "description": "As a platform operator, I need the first seeded user to be admin.",
+      "acceptanceCriteria": [
+        "Seed script creates admin@agendacultural.com as role admin",
+        "Seed process is idempotent",
+        "Admin password uses ADMIN_DEFAULT_PASSWORD env var",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 13,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "Create categories table and seed defaults",
+      "description": "As a user, I need predefined event categories available from day one.",
+      "acceptanceCriteria": [
+        "Add categories model and migration",
+        "Seed default categories from PRD",
+        "Seed can be re-run without duplicates",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 14,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-015",
+      "title": "Add public categories endpoint",
+      "description": "As a visitor, I want to list event categories without authentication.",
+      "acceptanceCriteria": [
+        "GET /api/categories returns category list",
+        "Endpoint is public",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 15,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-016",
+      "title": "Create events table and model",
+      "description": "As a developer, I need the event entity and status lifecycle persisted in DB.",
+      "acceptanceCriteria": [
+        "Add event model with required fields and status enum",
+        "Add reviewed_by and reviewed_at fields",
+        "Generate and apply migration",
+        "Create indexes for status, date, category_id, created_by",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 16,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-017",
+      "title": "Add create event endpoint",
+      "description": "As an authenticated user, I want to submit a new cultural event.",
+      "acceptanceCriteria": [
+        "POST /api/events requires authentication",
+        "New event is saved with status pendente",
+        "Created event links created_by to current user",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 17,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-018",
+      "title": "Add my events endpoint",
+      "description": "As an authenticated user, I want to list my submitted events with status.",
+      "acceptanceCriteria": [
+        "GET /api/events/me requires authentication",
+        "Returns only events created by current user",
+        "Includes status and rejection_reason when present",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 18,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-019",
+      "title": "Implement ownership guard for user event mutations",
+      "description": "As a platform owner, I need users blocked from editing/deleting events they do not own.",
+      "acceptanceCriteria": [
+        "Service-level ownership check compares created_by and current user",
+        "Non-owner edit/delete attempts return 403",
+        "Owner edit/delete remains allowed",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 19,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-020",
+      "title": "Add update own event endpoint",
+      "description": "As an event owner, I want to edit my event details.",
+      "acceptanceCriteria": [
+        "PUT /api/events/{id} requires authentication and ownership",
+        "Editing approved event resets status to pendente",
+        "Editing approved event clears reviewed_by and reviewed_at",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 20,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-021",
+      "title": "Add delete own event endpoint",
+      "description": "As an event owner, I want to delete or cancel my own event.",
+      "acceptanceCriteria": [
+        "DELETE /api/events/{id} requires authentication and ownership",
+        "Endpoint removes or marks event as cancelado per project rule",
+        "Non-owner deletion returns 403",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 21,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-022",
+      "title": "Add public approved events endpoint",
+      "description": "As a visitor, I want to browse approved events with pagination.",
+      "acceptanceCriteria": [
+        "GET /api/events returns only status aprovado",
+        "Response includes items, total, page, per_page, pages",
+        "Endpoint is public",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 22,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-023",
+      "title": "Add public list filters",
+      "description": "As a visitor, I want to filter public events by category, date interval, and neighborhood.",
+      "acceptanceCriteria": [
+        "GET /api/events supports category_id filter",
+        "GET /api/events supports date_from and date_to filters",
+        "GET /api/events supports neighborhood filter",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 23,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-024",
+      "title": "Add event detail endpoint",
+      "description": "As a visitor, I want to open full details for one event.",
+      "acceptanceCriteria": [
+        "GET /api/events/{id} returns full event details",
+        "Nonexistent event returns 404",
+        "Public visibility rules are enforced",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 24,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-025",
+      "title": "Add server-side text search endpoint",
+      "description": "As a visitor, I want to search events by title and description.",
+      "acceptanceCriteria": [
+        "GET /api/events/search requires q with minimum length 2",
+        "Search runs in database against title and description",
+        "Response is paginated with metadata contract",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 25,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-026",
+      "title": "Show past approved events as encerrado",
+      "description": "As a visitor, I want past events clearly marked as ended.",
+      "acceptanceCriteria": [
+        "Public listing marks past-date events as encerrado in response",
+        "Open events are not marked encerrado",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 26,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-027",
+      "title": "Add admin-role dependency",
+      "description": "As a platform owner, I need admin-only routes guarded by role checks.",
+      "acceptanceCriteria": [
+        "Implement require_admin dependency",
+        "Non-admin users receive 403 on admin routes",
+        "Admin users are allowed",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 27,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-028",
+      "title": "Add pending events admin endpoint",
+      "description": "As an admin, I want to list pending events awaiting moderation.",
+      "acceptanceCriteria": [
+        "GET /api/admin/events/pending returns only status pendente",
+        "Endpoint requires admin role",
+        "Response is paginated",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 28,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-029",
+      "title": "Add approve event endpoint",
+      "description": "As an admin, I want to approve pending events for public listing.",
+      "acceptanceCriteria": [
+        "PATCH /api/admin/events/{id}/approve sets status aprovado",
+        "reviewed_by and reviewed_at are stored",
+        "Endpoint requires admin role",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 29,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-030",
+      "title": "Add reject event endpoint",
+      "description": "As an admin, I want to reject pending events and provide a reason.",
+      "acceptanceCriteria": [
+        "PATCH /api/admin/events/{id}/reject requires reason in body",
+        "Missing reason returns validation error",
+        "status becomes rejeitado and rejection_reason is saved",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 30,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-031",
+      "title": "Add admin all-events endpoint",
+      "description": "As an admin, I want to list all events and filter by status.",
+      "acceptanceCriteria": [
+        "GET /api/admin/events returns all statuses",
+        "Supports status filter query parameter",
+        "Response is paginated",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 31,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-032",
+      "title": "Add admin update and delete event endpoints",
+      "description": "As an admin, I want full management of event records.",
+      "acceptanceCriteria": [
+        "PUT /api/admin/events/{id} can update any event",
+        "DELETE /api/admin/events/{id} can delete any event",
+        "Both endpoints require admin role",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 32,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-033",
+      "title": "Add admin dashboard stats endpoint",
+      "description": "As an admin, I want dashboard counters for moderation and usage visibility.",
+      "acceptanceCriteria": [
+        "GET /api/admin/dashboard returns total events and breakdown by status",
+        "Returns total users",
+        "Values match seeded dataset in tests",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 33,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-034",
+      "title": "Add admin users list and promote endpoints",
+      "description": "As an admin, I want to manage user roles.",
+      "acceptanceCriteria": [
+        "GET /api/admin/users lists users",
+        "PATCH /api/admin/users/{id}/promote upgrades role to admin",
+        "Endpoints require admin role",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 34,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-035",
+      "title": "Implement SeaweedFS storage service",
+      "description": "As a developer, I need an S3-compatible storage abstraction for images.",
+      "acceptanceCriteria": [
+        "Create storage service abstraction for upload and delete",
+        "Configure bucket and endpoint via env vars",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 35,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-036",
+      "title": "Add image upload endpoint",
+      "description": "As an authenticated user, I want to upload event images with validation.",
+      "acceptanceCriteria": [
+        "POST /api/upload/image requires authentication",
+        "Accept only jpg, png, webp",
+        "Reject files larger than 5MB",
+        "Return public image URL on success",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 36,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-037",
+      "title": "Scaffold web user app",
+      "description": "As a user, I need a browser client to access public and authenticated features.",
+      "acceptanceCriteria": [
+        "Create React + Vite web app structure",
+        "Add base routing and typed API client",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 37,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-038",
+      "title": "Build web home page with list search and filters",
+      "description": "As a visitor, I want to discover events on the web app home page.",
+      "acceptanceCriteria": [
+        "Home page shows paginated approved events",
+        "Search bar calls /api/events/search",
+        "Category/date/neighborhood filters are applied",
+        "Typecheck passes",
+        "Tests pass",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 38,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-039",
+      "title": "Build web auth and protected routes",
+      "description": "As a user, I want login/register flows and protected pages in web client.",
+      "acceptanceCriteria": [
+        "Implement login and register pages",
+        "Add auth context and token persistence",
+        "Protected pages redirect anonymous users",
+        "Typecheck passes",
+        "Tests pass",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 39,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-040",
+      "title": "Build web create edit and my-events pages",
+      "description": "As an authenticated user, I want to manage my event submissions in web.",
+      "acceptanceCriteria": [
+        "Create event form submits to /api/events",
+        "My events page shows status badges",
+        "Edit page shows warning + confirmation before editing approved event",
+        "Typecheck passes",
+        "Tests pass",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 40,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-041",
+      "title": "Build web event detail page",
+      "description": "As a visitor, I want complete event details in the web client.",
+      "acceptanceCriteria": [
+        "Event detail page displays full required fields",
+        "Share action is visible and functional",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 41,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-042",
+      "title": "Scaffold admin web app",
+      "description": "As an admin, I need a dedicated web dashboard app with role-based route protection.",
+      "acceptanceCriteria": [
+        "Create React + Vite admin app",
+        "Add admin auth flow and route guard",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 42,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-043",
+      "title": "Build admin pending moderation page",
+      "description": "As an admin, I want to approve or reject pending events from a single screen.",
+      "acceptanceCriteria": [
+        "Pending events table loads from /api/admin/events/pending",
+        "Approve action updates status",
+        "Reject action requires reason in modal",
+        "Typecheck passes",
+        "Tests pass",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 43,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-044",
+      "title": "Build admin dashboard metrics page",
+      "description": "As an admin, I want quick visibility of key platform metrics.",
+      "acceptanceCriteria": [
+        "Dashboard shows total events and status breakdown",
+        "Dashboard shows total users",
+        "Pending queue preview is visible",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 44,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-045",
+      "title": "Build admin events and users management pages",
+      "description": "As an admin, I want to manage all events and user promotions.",
+      "acceptanceCriteria": [
+        "All events page supports status filters and edit/delete actions",
+        "Users page lists users and allows promote action",
+        "Typecheck passes",
+        "Tests pass",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 45,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-046",
+      "title": "Scaffold mobile app and navigation",
+      "description": "As a user, I need a mobile app baseline with navigation and API integration setup.",
+      "acceptanceCriteria": [
+        "Create Expo app with navigation structure",
+        "Add typed API service layer",
+        "Typecheck passes",
+        "Manual verification in Expo simulator"
+      ],
+      "priority": 46,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-047",
+      "title": "Build mobile public browse flow",
+      "description": "As a visitor, I want to browse, search, and filter events in the mobile app.",
+      "acceptanceCriteria": [
+        "Home screen lists approved events",
+        "Search calls /api/events/search",
+        "Filters apply on mobile list",
+        "Event detail screen shows full event information",
+        "Typecheck passes",
+        "Tests pass",
+        "Manual verification in Expo simulator"
+      ],
+      "priority": 47,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-048",
+      "title": "Build mobile auth and my-events flow",
+      "description": "As an authenticated user, I want to submit and manage my events on mobile.",
+      "acceptanceCriteria": [
+        "Implement mobile login and register screens",
+        "Create and edit event screens submit to backend",
+        "My events screen shows status and rejection reason",
+        "Approved-event edit shows warning before save",
+        "Typecheck passes",
+        "Tests pass",
+        "Manual verification in Expo simulator"
+      ],
+      "priority": 48,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-049",
+      "title": "Add cross-endpoint pagination contract tests",
+      "description": "As a developer, I need contract tests to guarantee all list endpoints return consistent pagination metadata.",
+      "acceptanceCriteria": [
+        "List endpoints include items, total, page, per_page, pages",
+        "Contract tests cover public, user, and admin list endpoints",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 49,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-050",
+      "title": "Add end-to-end smoke checks and release checklist",
+      "description": "As a maintainer, I need final smoke checks to verify all core flows before release.",
+      "acceptanceCriteria": [
+        "Smoke tests cover register/login/create/approve/public-visibility cycle",
+        "Smoke tests cover reject flow with mandatory reason",
+        "Release checklist document is added and verified",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 50,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
