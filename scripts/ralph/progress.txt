@@ -80,6 +80,7 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - Category seeding should load existing category names once (`select(Category.name)`) and insert only missing names before a single commit.
 - For collection endpoints that must answer on a path without trailing slash (e.g., `/api/categories`), declare router path as `""` instead of `"/"` to avoid 307 redirects in API tests.
 - Keep SQLAlchemy StrEnum values and Alembic enum literals strictly synchronized for the same column (e.g., event statuses) to avoid runtime/migration drift.
+- Enforce ownership in service-layer helper functions (not routers) so update/delete rules stay centralized and reusable across endpoints.
 
 ---
 
@@ -263,4 +264,19 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - **Learnings for future iterations:**
   - For cross-cutting enum fields, validate both ORM model metadata and offline Alembic SQL to ensure schema + migration alignment.
   - Add index checks at model level (`Event.__table__.indexes`) to catch missing index declarations early in TDD.
+---
+
+## 2026-04-11 - US-017 to US-021
+- What was implemented: Completed authenticated user event CRUD module with service-layer ownership guards. Added `POST /api/events` (create as `pendente` with `created_by=current_user`), `GET /api/events/me` (only own events including `status` and `rejection_reason`), `PUT /api/events/{id}` (owner-only, approved->pending reset with cleared review metadata), and `DELETE /api/events/{id}` (owner-only soft cancel as `cancelado`).
+- Files changed:
+  - `backend/app/schemas/event.py` - create/update request schemas and event response schema
+  - `backend/app/repositories/event.py` - event persistence/query helpers
+  - `backend/app/services/event.py` - business logic for create/list/update/delete with ownership enforcement
+  - `backend/app/routers/events.py` - authenticated event CRUD endpoints
+  - `backend/app/main.py` - registered events router
+  - `backend/tests/test_events_user_crud.py` - 8 tests covering auth, creation, my-events filtering, ownership 403, approved reset, and cancel behavior
+  - `scripts/ralph/prd.json` - marked US-017 to US-021 as passed
+- **Learnings for future iterations:**
+  - Use a single service helper (`_get_owned_event_or_raise`) to enforce owner checks consistently for update/delete mutations.
+  - For delete semantics that keep audit history, soft-cancel (`status=cancelado`) keeps admin visibility while preventing accidental hard-loss.
 ---
