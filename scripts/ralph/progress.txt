@@ -2,6 +2,20 @@
 Started: Fri Apr 10 09:23:32 PM -03 2026
 ---
 
+## 2026-04-11 - US-012
+- What was implemented: GET /api/users/me (already existed from US-011) + PUT /api/users/me for updating name/email; duplicate email check returns 400; 8 tests covering GET, PUT, auth required, partial update, no password hash exposure, duplicate email
+- Files changed:
+  - `backend/app/schemas/user.py` - added `UserUpdateRequest` schema (name/email both optional)
+  - `backend/app/repositories/user.py` - added `update_user` function
+  - `backend/app/services/user.py` - new module with `update_profile` service function
+  - `backend/app/routers/users.py` - added `PUT /api/users/me` route
+  - `backend/tests/test_profile.py` - 8 tests (TDD red→green)
+- **Learnings for future iterations:**
+  - `app/services/user.py` is separate from `app/services/auth.py` — user profile logic lives in the user service, auth-specific logic stays in auth service
+  - `update_user` repository accepts optional name/email — only updates fields that are not None
+  - Duplicate email check compares against existing user but skips if email unchanged (avoids false positive when user re-submits same email)
+---
+
 ## 2026-04-11 - US-011
 - What was implemented: `get_current_user` FastAPI dependency in `app/dependencies/auth.py`; extracts Bearer token, decodes JWT, validates `token_type == "access"`, looks up user by `sub` claim, returns User or raises 401; added `GET /api/users/me` route as a demo/test endpoint; 6 tests covering all 401 scenarios and successful authenticated access
 - Files changed:
