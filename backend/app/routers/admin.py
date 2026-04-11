@@ -14,6 +14,7 @@ from app.schemas.event import (
     PaginatedEventsResponse,
     RejectEventRequest,
 )
+from app.schemas.user import PaginatedUsersResponse, UserResponse
 from app.services import admin as admin_service
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -26,6 +27,28 @@ async def get_dashboard(
 ) -> DashboardResponse:
     """Return admin dashboard counters."""
     return await admin_service.get_dashboard_stats(session)
+
+
+@router.get("/users", response_model=PaginatedUsersResponse)
+async def list_users(
+    page: int = 1,
+    per_page: int = 20,
+    _: User = Depends(require_admin),
+    session: AsyncSession = Depends(get_db),
+) -> PaginatedUsersResponse:
+    """List all users with pagination."""
+    return await admin_service.list_users(session, page=page, per_page=per_page)
+
+
+@router.patch("/users/{user_id}/promote", response_model=UserResponse)
+async def promote_user(
+    user_id: int,
+    _: User = Depends(require_admin),
+    session: AsyncSession = Depends(get_db),
+) -> UserResponse:
+    """Promote a user to admin role."""
+    user = await admin_service.promote_user(session, user_id=user_id)
+    return UserResponse.model_validate(user)
 
 
 @router.get("/events/pending", response_model=PaginatedEventsResponse)

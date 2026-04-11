@@ -20,6 +20,16 @@ class UserResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class PaginatedUsersResponse(BaseModel):
+    """Paginated list of users."""
+
+    items: list[UserResponse]
+    total: int
+    page: int
+    per_page: int
+    pages: int
+
+
 class UserUpdateRequest(BaseModel):
     """Fields that a user is allowed to update on their own profile."""
 

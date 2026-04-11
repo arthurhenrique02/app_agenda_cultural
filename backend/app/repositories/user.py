@@ -38,6 +38,34 @@ async def count_users(session: AsyncSession) -> int:
     return int(result.scalar_one())
 
 
+async def list_users_paginated(
+    session: AsyncSession,
+    *,
+    page: int = 1,
+    per_page: int = 20,
+) -> tuple[list[User], int, int]:
+    """Return paginated user list with (users, total, pages)."""
+    total_result = await session.execute(select(func.count()).select_from(User))
+    total = int(total_result.scalar_one())
+    pages = max(1, (total + per_page - 1) // per_page)
+
+    offset = (page - 1) * per_page
+    result = await session.execute(
+        select(User).order_by(User.id).offset(offset).limit(per_page)
+    )
+    users = list(result.scalars().all())
+    return users, total, pages
+
+
+async def promote_user(session: AsyncSession, user: User) -> User:
+    """Set user role to admin and return the updated instance."""
+    user.role = "admin"
+    session.add(user)
+    await session.commit()
+    await session.refresh(user)
+    return user
+
+
 async def update_user(
     session: AsyncSession,
     user: User,
