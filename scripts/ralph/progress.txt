@@ -78,6 +78,7 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - Use `async_client_with_tables` fixture (also in conftest.py) for tests that need actual ORM models: it runs `Base.metadata.create_all` on the test SQLite engine before yielding the client.
 - `pydantic[email]` (email-validator) must be installed for `EmailStr` to work: `uv add "pydantic[email]"`.
 - Category seeding should load existing category names once (`select(Category.name)`) and insert only missing names before a single commit.
+- For collection endpoints that must answer on a path without trailing slash (e.g., `/api/categories`), declare router path as `""` instead of `"/"` to avoid 307 redirects in API tests.
 
 ---
 
@@ -233,3 +234,18 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
     - Keep the category names stable and canonical in seeds/tests: `show`, `exposicao`, `peca`, `festival`, `outro`.
     - Reuse `seed_default_categories` in setup flows instead of hardcoding category inserts in tests or scripts.
   ---
+
+## 2026-04-11 - US-015
+- What was implemented: Added public `GET /api/categories` endpoint with layered architecture (router → service → repository); returns full category list without authentication and supports empty-list response.
+- Files changed:
+  - `backend/app/schemas/category.py` - new `CategoryResponse` schema
+  - `backend/app/repositories/category.py` - added `list_categories` query ordered by name
+  - `backend/app/services/category.py` - added category listing business service
+  - `backend/app/routers/categories.py` - added public categories route
+  - `backend/app/main.py` - registered categories router
+  - `backend/tests/test_categories.py` - added endpoint tests (public list and empty list)
+  - `scripts/ralph/prd.json` - marked US-015 as passed
+- **Learnings for future iterations:**
+  - For endpoint tests that need seeded data with `async_client_with_tables`, insert rows through `db_module.AsyncSessionLocal()` while the fixture override is active.
+  - Keep categories endpoint public (no auth dependency) and return consistent model serialization via `model_validate` from ORM objects.
+---
