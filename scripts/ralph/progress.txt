@@ -26,3 +26,17 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
   - httpx `ASGITransport` is the correct way to create in-process test clients for FastAPI
   - Python version pinned to 3.12 via `.python-version` file
 ---
+
+## 2026-04-11 - US-002
+- What was implemented: Centralized pydantic-settings config module with env var overrides, `.env.example` with documented defaults, and tests
+- Files changed:
+  - `backend/app/config.py` - Settings class with all required env vars and defaults
+  - `backend/.env.example` - documented env var reference
+  - `backend/tests/test_config.py` - tests for defaults and env var overrides
+- **Learnings for future iterations:**
+  - `pydantic-settings` is already in project dependencies; use `BaseSettings` from `pydantic_settings`
+  - Settings class uses `model_config = SettingsConfigDict(...)` (pydantic v2 style, not `class Config:`)
+  - `extra="ignore"` prevents errors from unknown env vars
+  - `case_sensitive=False` allows env vars in any case
+  - black reformats long string defaults with parentheses — let black handle formatting
+---
