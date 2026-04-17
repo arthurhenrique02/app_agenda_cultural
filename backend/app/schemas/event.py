@@ -90,7 +90,7 @@ class PublicEventResponse(BaseModel):
 
 
 class PaginatedEventsResponse(BaseModel):
-    """Paginated list contract for authenticated/admin event lists."""
+    """Paginated list contract for authenticated/admin event lists"""
 
     items: list[EventResponse]
     total: int
