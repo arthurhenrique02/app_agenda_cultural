@@ -114,7 +114,7 @@ export interface EventResponse {
   updated_at: string;
 }
 
-// --- Pagination ---
+// --- Pagination  ---
 
 export interface PaginatedResponse<T> {
   items: T[];
