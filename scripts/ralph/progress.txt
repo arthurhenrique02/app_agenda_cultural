@@ -440,4 +440,21 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - **Learnings for future iterations:**
   - Using `white-space: pre-wrap` for the description ensures that line breaks from the textarea are preserved in the detail view.
   - Providing immediate visual feedback for the "Share" action improves the perceived responsiveness of the app.
+
+---
+
+## 2026-05-15 - US-042
+- What was implemented: Scaffolded Admin Web App.
+  - Created a new React + Vite + TypeScript project in `frontend/admin/`.
+  - Configured Vite with proxy to backend and port 5174.
+  - Implemented `AdminAuthContext` with role-based validation (only `admin` allowed).
+  - Implemented `ProtectedRoute` for admin-only areas.
+  - Created base layout with Sidebar and navigation.
+  - Implemented typed API client and types adapted for admin use cases.
+  - Verified TypeScript builds successfully.
+- Files changed:
+  - `frontend/admin/*` (new project structure)
+- **Learnings for future iterations:**
+  - Separating Admin into a dedicated project allows for independent deployment and specialized security configurations (different tokens/storage keys).
+  - Using a dedicated port (5174) prevents port conflicts when running both user and admin frontends during development.
 ---

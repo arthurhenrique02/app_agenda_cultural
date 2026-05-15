@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/protectedroute.tsx","./src/contexts/adminauthcontext.tsx","./src/pages/loginpage.tsx","./src/services/api.ts","./src/types/api.ts"],"version":"5.6.3"}
