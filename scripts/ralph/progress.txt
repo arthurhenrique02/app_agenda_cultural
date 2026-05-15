@@ -457,4 +457,17 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - **Learnings for future iterations:**
   - Separating Admin into a dedicated project allows for independent deployment and specialized security configurations (different tokens/storage keys).
   - Using a dedicated port (5174) prevents port conflicts when running both user and admin frontends during development.
+
+---
+
+## 2026-05-15 - US-043
+- What was implemented: Admin Pending Moderation page.
+  - Implemented `ModerationPage.tsx` with a tabular view of pending events.
+  - Added "Approve" action with confirmation.
+  - Added "Reject" action with a modal to collect rejection reasons.
+  - Integrated `api.listPendingEvents`, `api.approveEvent`, and `api.rejectEvent`.
+  - Verified TypeScript builds successfully.
+- Files changed:
+  - `frontend/admin/src/pages/ModerationPage.tsx` (new)
+  - `frontend/admin/src/App.tsx` (updated)
 ---

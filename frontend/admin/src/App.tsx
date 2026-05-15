@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Link, Outlet } from "react-rout
 import { AdminAuthProvider, useAdminAuth } from "./contexts/AdminAuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
+import ModerationPage from "./pages/ModerationPage";
 
 function AdminLayout() {
   const { user, logout } = useAdminAuth();
@@ -47,7 +48,6 @@ function AdminLayout() {
 }
 
 function Dashboard() { return <h1>Dashboard de Métricas</h1>; }
-function Moderation() { return <h1>Moderação de Eventos</h1>; }
 function Users() { return <h1>Gerenciamento de Usuários</h1>; }
 function AllEvents() { return <h1>Todos os Eventos</h1>; }
 
@@ -60,7 +60,7 @@ export default function App() {
           
           <Route element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/moderation" element={<Moderation />} />
+            <Route path="/moderation" element={<ModerationPage />} />
             <Route path="/users" element={<Users />} />
             <Route path="/events" element={<AllEvents />} />
           </Route>
