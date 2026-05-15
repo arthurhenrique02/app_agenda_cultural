@@ -425,4 +425,19 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - **Learnings for future iterations:**
   - Consolidating logic into a shared `EventForm` reduced code duplication significantly and ensured consistent validation across create/edit flows.
   - Adding a clear warning on the Edit page for approved events is essential to prevent user frustration when their event disappears from public listing after a small change.
+
+---
+
+## 2026-05-15 - US-041
+- What was implemented: Web Event Detail page.
+  - Implemented `EventDetailPage.tsx` with full event information display.
+  - Added "Hero" image section with placeholder support.
+  - Added "Share" functionality using `navigator.clipboard`.
+  - Integrated category name loading and pretty-printing for dates and times.
+  - Verified TypeScript builds successfully.
+- Files changed:
+  - `frontend/web/src/pages/EventDetailPage.tsx` (updated)
+- **Learnings for future iterations:**
+  - Using `white-space: pre-wrap` for the description ensures that line breaks from the textarea are preserved in the detail view.
+  - Providing immediate visual feedback for the "Share" action improves the perceived responsiveness of the app.
 ---
