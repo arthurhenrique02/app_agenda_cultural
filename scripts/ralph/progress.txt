@@ -407,4 +407,22 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
 - **Learnings for future iterations:**
   - Using `useLocation` to capture the `from` path allows a better UX by returning the user to where they were before being redirected to login.
   - Auto-login after registration reduces friction for new users.
+
+---
+
+## 2026-05-15 - US-040
+- What was implemented: Web Create, Edit, and My Events pages.
+  - Created a reusable `EventForm.tsx` component with image upload integration (`api.uploadImage`).
+  - Implemented `MyEventsPage.tsx` with status badges, rejection reason display, and delete confirmation.
+  - Implemented `CreateEventPage.tsx` using the shared form.
+  - Implemented `EditEventPage.tsx` with a warning banner for already-approved events (business rule reset).
+  - Verified TypeScript builds successfully.
+- Files changed:
+  - `frontend/web/src/components/EventForm.tsx` (new)
+  - `frontend/web/src/pages/MyEventsPage.tsx` (updated)
+  - `frontend/web/src/pages/CreateEventPage.tsx` (updated)
+  - `frontend/web/src/pages/EditEventPage.tsx` (updated)
+- **Learnings for future iterations:**
+  - Consolidating logic into a shared `EventForm` reduced code duplication significantly and ensured consistent validation across create/edit flows.
+  - Adding a clear warning on the Edit page for approved events is essential to prevent user frustration when their event disappears from public listing after a small change.
 ---
