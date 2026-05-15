@@ -373,4 +373,38 @@ Started: Fri Apr 10 09:23:32 PM -03 2026
   - Vite proxy in `server.proxy` config is the simplest way to avoid CORS in dev; no backend changes needed.
   - API client returns typed promises; consumers don't need to cast. `ApiError` class carries HTTP status for error handling.
   - `ProtectedRoute` checks `useAuth().loading` to avoid flashing login page during initial profile fetch.
+
+---
+
+## 2026-05-15 - US-038
+- What was implemented: Full Web Home Page with event listing, server-side search, and filters.
+  - Created `EventCard.tsx` component for event display.
+  - Created `FilterBar.tsx` component with search, category, neighborhood, and date filters.
+  - Implemented `HomePage.tsx` logic with search debouncing, category loading, and pagination.
+  - Verified TypeScript builds successfully.
+- Files changed:
+  - `frontend/web/src/components/EventCard.tsx` (new)
+  - `frontend/web/src/components/FilterBar.tsx` (new)
+  - `frontend/web/src/pages/HomePage.tsx` (updated)
+- **Learnings for future iterations:**
+  - Standardizing component styles with inline styles for now to ensure visual consistency without external CSS dependencies in this stage.
+  - Debouncing the search input improves performance and reduces unnecessary API calls.
+  - Resetting page to 1 on filter change is crucial for UX.
+
+---
+
+## 2026-05-15 - US-039
+- What was implemented: Web Auth and Protected Routes.
+  - Implemented `LoginPage.tsx` with credentials handling and redirect after login.
+  - Implemented `RegisterPage.tsx` with validation and auto-login.
+  - Added a global `Header` component to `App.tsx` showing auth status and logout action.
+  - Verified `ProtectedRoute.tsx` logic with the new pages.
+  - Verified TypeScript builds successfully.
+- Files changed:
+  - `frontend/web/src/pages/LoginPage.tsx` (updated)
+  - `frontend/web/src/pages/RegisterPage.tsx` (updated)
+  - `frontend/web/src/App.tsx` (updated)
+- **Learnings for future iterations:**
+  - Using `useLocation` to capture the `from` path allows a better UX by returning the user to where they were before being redirected to login.
+  - Auto-login after registration reduces friction for new users.
 ---
