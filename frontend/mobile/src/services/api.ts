@@ -1,3 +1,5 @@
+import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 import type {
   AccessTokenResponse,
   CategoryResponse,
@@ -13,7 +15,11 @@ import type {
   UserUpdateRequest,
 } from "../types/api";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
+// For development: use your machine's IP address if testing on a real device
+// Android emulator uses 10.0.2.2 to access localhost
+const API_BASE = Platform.OS === 'android' 
+  ? 'http://10.0.2.2:8000/api' 
+  : 'http://localhost:8000/api';
 
 class ApiError extends Error {
   constructor(
@@ -29,7 +35,7 @@ async function request<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const token = localStorage.getItem("access_token");
+  const token = await SecureStore.getItemAsync("access_token");
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string>),
   };
@@ -47,7 +53,12 @@ async function request<T>(
 
   if (!res.ok) {
     const text = await res.text();
-    throw new ApiError(res.status, text);
+    let detail = text;
+    try {
+      const json = JSON.parse(text);
+      detail = json.detail || text;
+    } catch (e) {}
+    throw new ApiError(res.status, detail);
   }
 
   return res.json() as Promise<T>;
@@ -107,19 +118,21 @@ export interface EventListParams {
 }
 
 export function listEvents(params: EventListParams = {}) {
-  const qs = new URLSearchParams();
+  const paramsArray: string[] = [];
   for (const [k, v] of Object.entries(params)) {
-    if (v !== undefined && v !== null && v !== "") qs.set(k, String(v));
+    if (v !== undefined && v !== null && v !== "") {
+      paramsArray.push(`${k}=${encodeURIComponent(String(v))}`);
+    }
   }
-  const query = qs.toString();
+  const query = paramsArray.join('&');
   return request<PaginatedResponse<EventResponse>>(
     `/events${query ? `?${query}` : ""}`,
   );
 }
 
 export function searchEvents(q: string, page = 1, per_page = 20) {
-  const qs = new URLSearchParams({ q, page: String(page), per_page: String(per_page) });
-  return request<PaginatedResponse<EventResponse>>(`/events/search?${qs}`);
+  const query = `q=${encodeURIComponent(q)}&page=${page}&per_page=${per_page}`;
+  return request<PaginatedResponse<EventResponse>>(`/events/search?${query}`);
 }
 
 export function getEvent(id: number) {
@@ -156,9 +169,14 @@ export function deleteEvent(id: number) {
 
 // --- Upload ---
 
-export function uploadImage(file: File) {
+export function uploadImage(uri: string, type: string, name: string) {
   const form = new FormData();
-  form.append("file", file);
+  // @ts-ignore - React Native FormData expects an object with uri, type, and name
+  form.append("file", {
+    uri,
+    type,
+    name,
+  });
   return request<UploadResponse>("/upload/image", {
     method: "POST",
     body: form,

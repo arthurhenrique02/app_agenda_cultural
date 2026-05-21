@@ -7,16 +7,19 @@ export default function MyEventsPage() {
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     loadEvents();
-  }, []);
+  }, [page]);
 
   async function loadEvents() {
     setLoading(true);
     try {
-      const data = await api.getMyEvents();
-      setEvents(data);
+      const res = await api.getMyEvents(page);
+      setEvents(res.items);
+      setTotalPages(res.pages);
     } catch (err) {
       setError("Falha ao carregar seus eventos.");
       console.error(err);
@@ -32,7 +35,11 @@ export default function MyEventsPage() {
 
     try {
       await api.deleteEvent(id);
-      loadEvents(); // Reload list
+      if (events.length === 1 && page > 1) {
+        setPage(page - 1);
+      } else {
+        loadEvents();
+      }
     } catch (err) {
       alert("Falha ao excluir evento.");
       console.error(err);
@@ -131,6 +138,26 @@ export default function MyEventsPage() {
           </div>
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <div style={{ marginTop: "40px", display: "flex", justifyContent: "center", gap: "10px", alignItems: "center" }}>
+          <button 
+            disabled={page === 1} 
+            onClick={() => setPage(p => p - 1)}
+            style={{ padding: "8px 16px", borderRadius: "4px", border: "1px solid #ddd", cursor: page === 1 ? "default" : "pointer" }}
+          >
+            Anterior
+          </button>
+          <span style={{ color: "#666" }}>Página {page} de {totalPages}</span>
+          <button 
+            disabled={page === totalPages} 
+            onClick={() => setPage(p => p + 1)}
+            style={{ padding: "8px 16px", borderRadius: "4px", border: "1px solid #ddd", cursor: page === totalPages ? "default" : "pointer" }}
+          >
+            Próxima
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,6 +4,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import ModerationPage from "./pages/ModerationPage";
 import DashboardPage from "./pages/DashboardPage";
+import EventsPage from "./pages/EventsPage";
+import UsersPage from "./pages/UsersPage";
 
 function AdminLayout() {
   const { user, logout } = useAdminAuth();
@@ -48,9 +50,6 @@ function AdminLayout() {
   );
 }
 
-function Users() { return <h1>Gerenciamento de Usuários</h1>; }
-function AllEvents() { return <h1>Todos os Eventos</h1>; }
-
 export default function App() {
   return (
     <AdminAuthProvider>
@@ -61,8 +60,8 @@ export default function App() {
           <Route element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/moderation" element={<ModerationPage />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/events" element={<AllEvents />} />
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/events" element={<EventsPage />} />
           </Route>
         </Routes>
       </Router>

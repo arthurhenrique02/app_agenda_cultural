@@ -671,7 +671,7 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 45,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -685,7 +685,7 @@
         "Manual verification in Expo simulator"
       ],
       "priority": 46,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -702,7 +702,7 @@
         "Manual verification in Expo simulator"
       ],
       "priority": 47,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -719,7 +719,7 @@
         "Manual verification in Expo simulator"
       ],
       "priority": 48,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -733,7 +733,7 @@
         "Tests pass"
       ],
       "priority": 49,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -748,7 +748,7 @@
         "Tests pass"
       ],
       "priority": 50,
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]

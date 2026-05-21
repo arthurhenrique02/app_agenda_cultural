@@ -9,7 +9,7 @@ from app.models.category import Category
 from app.models.event import Event, EventStatus
 from app.models.user import User
 from app.repositories import event as event_repo
-from app.schemas.event import PublicEventResponse
+from app.schemas.event import EventResponse, PublicEventResponse
 
 
 async def create_user_event(
@@ -57,9 +57,23 @@ async def create_user_event(
     return await event_repo.create_event(session, event)
 
 
-async def list_my_events(session: AsyncSession, current_user: User) -> list[Event]:
-    """Return events created by the authenticated user."""
-    return await event_repo.list_events_by_creator(session, current_user.id)
+async def list_my_events(
+    session: AsyncSession,
+    current_user: User,
+    page: int = 1,
+    per_page: int = 20,
+) -> dict:
+    """Return events created by the authenticated user with pagination."""
+    events, total, pages = await event_repo.list_events_by_creator_paginated(
+        session, current_user.id, page, per_page
+    )
+    return {
+        "items": [EventResponse.model_validate(e) for e in events],
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+        "pages": pages,
+    }
 
 
 def _public_status(event: Event) -> str:
