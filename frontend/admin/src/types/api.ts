@@ -98,7 +98,10 @@ export interface RejectEventRequest {
 
 export interface DashboardResponse {
   total_events: number;
-  status_breakdown: Record<EventStatus, number>;
+  pendente: number;
+  aprovado: number;
+  rejeitado: number;
+  cancelado: number;
   total_users: number;
 }
 

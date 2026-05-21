@@ -26,7 +26,7 @@ export default function DashboardPage() {
   if (loading) return <p>Carregando métricas...</p>;
   if (error || !stats) return <div style={{ color: "red" }}>{error}</div>;
 
-  const pendingCount = stats.status_breakdown.pendente || 0;
+  const pendingCount = stats.pendente || 0;
 
   return (
     <div>
@@ -68,13 +68,13 @@ export default function DashboardPage() {
       <h2 style={{ marginBottom: "20px", fontSize: "1.2rem", color: "#7f8c8d" }}>Distribuição por Status</h2>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px" }}>
         <div style={{ backgroundColor: "#fff", padding: "20px", borderRadius: "8px", border: "1px solid #eee" }}>
-          <span style={{ color: "#27ae60", fontWeight: "bold" }}>Aprovados:</span> {stats.status_breakdown.aprovado || 0}
+          <span style={{ color: "#27ae60", fontWeight: "bold" }}>Aprovados:</span> {stats.aprovado || 0}
         </div>
         <div style={{ backgroundColor: "#fff", padding: "20px", borderRadius: "8px", border: "1px solid #eee" }}>
-          <span style={{ color: "#e74c3c", fontWeight: "bold" }}>Rejeitados:</span> {stats.status_breakdown.rejeitado || 0}
+          <span style={{ color: "#e74c3c", fontWeight: "bold" }}>Rejeitados:</span> {stats.rejeitado || 0}
         </div>
         <div style={{ backgroundColor: "#fff", padding: "20px", borderRadius: "8px", border: "1px solid #eee" }}>
-          <span style={{ color: "#95a5a6", fontWeight: "bold" }}>Cancelados:</span> {stats.status_breakdown.cancelado || 0}
+          <span style={{ color: "#95a5a6", fontWeight: "bold" }}>Cancelados:</span> {stats.cancelado || 0}
         </div>
       </div>
     </div>
