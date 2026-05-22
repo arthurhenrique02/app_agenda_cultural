@@ -29,7 +29,7 @@ export default function FilterBar({
 }: FilterBarProps) {
   return (
     <div style={{ marginBottom: "30px", padding: "20px", backgroundColor: "#f9f9f9", borderRadius: "8px" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "15px" }}>
+      <div className="filter-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "15px" }}>
         {/* Busca Textual */}
         <div>
           <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Buscar</label>

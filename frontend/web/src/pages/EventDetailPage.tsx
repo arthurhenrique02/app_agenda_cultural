@@ -71,7 +71,7 @@ export default function EventDetailPage() {
 
       <div style={{ backgroundColor: "#fff", borderRadius: "12px", border: "1px solid #ddd", overflow: "hidden", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }}>
         {/* Imagem de Destaque */}
-        <div style={{ height: "400px", backgroundColor: "#f0f0f0", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div className="feature-image" style={{ height: "400px", backgroundColor: "#f0f0f0", display: "flex", alignItems: "center", justifyContent: "center" }}>
           {event.image_url ? (
             <img src={event.image_url} alt={event.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           ) : (
@@ -80,7 +80,7 @@ export default function EventDetailPage() {
         </div>
 
         <div style={{ padding: "40px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
+          <div className="event-detail-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
             <div>
               <span style={{ 
                 padding: "4px 12px", 

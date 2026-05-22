@@ -14,12 +14,12 @@ function Header() {
   const { user, logout } = useAuth();
 
   return (
-    <nav style={{ padding: "1rem 2rem", borderBottom: "1px solid #eee", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#fff" }}>
+    <nav className="header-nav" style={{ padding: "1rem 2rem", borderBottom: "1px solid #eee", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#fff" }}>
       <Link to="/" style={{ fontSize: "1.5rem", fontWeight: "bold", textDecoration: "none", color: "#333" }}>
         Agenda Cultural
       </Link>
 
-      <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+      <div className="header-links" style={{ display: "flex", gap: "20px", alignItems: "center" }}>
         <Link to="/" style={{ textDecoration: "none", color: "#666" }}>Início</Link>
 
         {user ? (
