@@ -12,6 +12,7 @@ from app.schemas.event import (
     EventCreateRequest,
     EventResponse,
     EventUpdateRequest,
+    PaginatedEventsResponse,
     PaginatedPublicEventsResponse,
     PublicEventResponse,
 )
@@ -99,14 +100,24 @@ async def create_event(
     return EventResponse.model_validate(event)
 
 
-@router.get("/me", response_model=list[EventResponse])
+@router.get("/me", response_model=PaginatedEventsResponse)
 async def get_my_events(
+    page: int = 1,
+    per_page: int = 20,
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_db),
-) -> list[EventResponse]:
-    """Return events created by the authenticated user."""
-    events = await event_service.list_my_events(session, current_user)
-    return [EventResponse.model_validate(event) for event in events]
+) -> PaginatedEventsResponse:
+    """Return events created by the authenticated user with pagination."""
+    payload = await event_service.list_my_events(
+        session, current_user, page=page, per_page=per_page
+    )
+    return PaginatedEventsResponse(
+        items=payload["items"],
+        total=payload["total"],
+        page=payload["page"],
+        per_page=payload["per_page"],
+        pages=payload["pages"],
+    )
 
 
 @router.get("/{event_id}", response_model=PublicEventResponse)

@@ -135,8 +135,10 @@ export function createEvent(data: EventCreateRequest) {
   });
 }
 
-export function getMyEvents() {
-  return request<EventResponse[]>("/events/me");
+export function getMyEvents(page = 1, per_page = 20) {
+  return request<PaginatedResponse<EventResponse>>(
+    `/events/me?page=${page}&per_page=${per_page}`,
+  );
 }
 
 export function updateEvent(id: number, data: EventUpdateRequest) {
