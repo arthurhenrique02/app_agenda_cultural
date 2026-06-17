@@ -1,3 +1,4 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -6,11 +7,31 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 *.egg-info/
+
+# JavaScript / Node
+node_modules/
 dist/
-build/
+dist-electron/
+release/
+*.tsbuildinfo
+.eslintcache
+
+# Environment
 .env
+.env.local
+.env.*.local
+
+# Tools
 .claude
 CLAUDE.*
 PROMPT.*
 .claude*
 .devcontainer/
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
