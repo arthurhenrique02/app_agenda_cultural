@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import admin as admin_router
 from app.routers import auth as auth_router
@@ -11,6 +12,15 @@ app = FastAPI(
     title="Agenda Cultural API",
     description="Cultural events platform API",
     version="0.1.0",
+)
+
+# CORS Configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Em produção, especifique as origens permitidas
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(auth_router.router)
