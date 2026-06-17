@@ -22,14 +22,25 @@ async def get_event_by_id(session: AsyncSession, event_id: int) -> Event | None:
     return result.scalar_one_or_none()
 
 
-async def list_events_by_creator(session: AsyncSession, creator_id: int) -> list[Event]:
-    """Return events submitted by a specific user."""
+async def list_events_by_creator_paginated(
+    session: AsyncSession,
+    creator_id: int,
+    page: int,
+    per_page: int,
+) -> tuple[list[Event], int, int]:
+    """Return events submitted by a specific user with pagination."""
+    stmt = select(Event).where(Event.created_by == creator_id)
+
+    count_stmt = select(func.count()).select_from(stmt.subquery())
+    total = int((await session.execute(count_stmt)).scalar_one())
+    pages = _compute_pages(total, per_page)
+
     result = await session.execute(
-        select(Event)
-        .where(Event.created_by == creator_id)
-        .order_by(Event.created_at.desc())
+        stmt.order_by(Event.created_at.desc())
+        .offset((page - 1) * per_page)
+        .limit(per_page)
     )
-    return list(result.scalars().all())
+    return list(result.scalars().all()), total, pages
 
 
 async def save_event(session: AsyncSession, event: Event) -> Event:
@@ -134,6 +145,20 @@ async def list_admin_events_paginated(
         .limit(per_page)
     )
     return list(result.scalars().all()), total, pages
+
+
+async def count_events_by_status(session: AsyncSession) -> dict[str, int]:
+    """Return total event count and breakdown by status."""
+    result = await session.execute(
+        select(Event.status, func.count()).group_by(Event.status)
+    )
+    counts: dict[str, int] = {}
+    total = 0
+    for status_val, count in result.all():
+        counts[status_val] = count
+        total += count
+    counts["total"] = total
+    return counts
 
 
 async def delete_event(session: AsyncSession, event: Event) -> None:

@@ -9,6 +9,23 @@ from app.models.category import Category
 from app.models.event import EventStatus
 from app.models.user import User
 from app.repositories import event as event_repo
+from app.repositories import user as user_repo
+from app.schemas.event import DashboardResponse
+from app.schemas.user import PaginatedUsersResponse, UserResponse
+
+
+async def get_dashboard_stats(session: AsyncSession) -> DashboardResponse:
+    """Compute dashboard counters for admin overview."""
+    counts = await event_repo.count_events_by_status(session)
+    total_users = await user_repo.count_users(session)
+    return DashboardResponse(
+        total_events=counts.get("total", 0),
+        pendente=counts.get(EventStatus.pendente, 0),
+        aprovado=counts.get(EventStatus.aprovado, 0),
+        rejeitado=counts.get(EventStatus.rejeitado, 0),
+        cancelado=counts.get(EventStatus.cancelado, 0),
+        total_users=total_users,
+    )
 
 
 async def list_pending_events(
@@ -166,3 +183,33 @@ async def delete_event(session: AsyncSession, *, event_id: int) -> None:
             detail="Event not found.",
         )
     await event_repo.delete_event(session, event)
+
+
+async def list_users(
+    session: AsyncSession,
+    *,
+    page: int,
+    per_page: int,
+) -> PaginatedUsersResponse:
+    """Return paginated user list."""
+    users, total, pages = await user_repo.list_users_paginated(
+        session, page=page, per_page=per_page
+    )
+    return PaginatedUsersResponse(
+        items=[UserResponse.model_validate(u) for u in users],
+        total=total,
+        page=page,
+        per_page=per_page,
+        pages=pages,
+    )
+
+
+async def promote_user(session: AsyncSession, *, user_id: int) -> User:
+    """Promote a user to admin role."""
+    user = await user_repo.get_user_by_id(session, user_id)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found.",
+        )
+    return await user_repo.promote_user(session, user)

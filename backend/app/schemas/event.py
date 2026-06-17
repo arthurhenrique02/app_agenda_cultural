@@ -109,6 +109,17 @@ class PaginatedPublicEventsResponse(BaseModel):
     pages: int
 
 
+class DashboardResponse(BaseModel):
+    """Admin dashboard counters."""
+
+    total_events: int
+    pendente: int
+    aprovado: int
+    rejeitado: int
+    cancelado: int
+    total_users: int
+
+
 class RejectEventRequest(BaseModel):
     """Payload for rejecting an event in admin moderation."""
 
