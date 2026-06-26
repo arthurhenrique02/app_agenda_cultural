@@ -149,20 +149,22 @@ export default function MyEventsScreen() {
                   </View>
                 )}
 
-                <View style={styles.actions}>
-                  <TouchableOpacity 
-                    style={styles.editButton}
-                    onPress={() => navigation.navigate('EditEvent' as any, { id: item.id })}
-                  >
-                    <Text style={styles.actionText}>Editar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity 
-                    style={styles.deleteButton}
-                    onPress={() => handleDelete(item.id)}
-                  >
-                    <Text style={styles.deleteText}>Excluir</Text>
-                  </TouchableOpacity>
-                </View>
+                {item.status !== 'cancelado' && (
+                  <View style={styles.actions}>
+                    <TouchableOpacity
+                      style={styles.editButton}
+                      onPress={() => navigation.navigate('EditEvent' as any, { id: item.id })}
+                    >
+                      <Text style={styles.actionText}>Editar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={() => handleDelete(item.id)}
+                    >
+                      <Text style={styles.deleteText}>Excluir</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
             );
           }}

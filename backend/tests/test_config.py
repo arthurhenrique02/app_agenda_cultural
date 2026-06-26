@@ -23,7 +23,7 @@ def test_settings_override_via_env(monkeypatch: pytest.MonkeyPatch):
 
 
 def test_settings_database_url_override(monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setenv("DATABASE_URL", "postgresql+asyncpg://user:pass@db:5432/mydb")
+    monkeypatch.setenv("DATABASE_URL", "postgresql+asyncpg://user:pass@db:5450/mydb")
 
     s = Settings()
-    assert s.database_url == "postgresql+asyncpg://user:pass@db:5432/mydb"
+    assert s.database_url == "postgresql+asyncpg://user:pass@db:5450/mydb"

@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     # Database
     database_url: str = (
-        "postgresql+asyncpg://postgres:postgres@localhost:5432/agenda_cultural"
+        "postgresql+asyncpg://postgres:postgres@localhost:5450/agenda_cultural"
     )
 
     # JWT
@@ -25,6 +25,7 @@ class Settings(BaseSettings):
 
     # Storage (SeaweedFS / S3-compatible)
     storage_endpoint: str = "http://localhost:8333"
+    storage_public_url: str = "http://localhost:8333"
     storage_access_key: str = "minioadmin"
     storage_secret_key: str = "minioadmin"
     storage_bucket: str = "agenda-cultural"

@@ -14,7 +14,7 @@ export default function EditEventPage() {
   useEffect(() => {
     if (!id) return;
     
-    api.getEvent(Number(id))
+    api.getMyEvent(Number(id))
       .then(setEvent)
       .catch((err) => {
         setError("Não foi possível carregar os dados do evento.");

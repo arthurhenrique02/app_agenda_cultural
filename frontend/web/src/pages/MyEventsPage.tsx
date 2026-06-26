@@ -125,14 +125,20 @@ export default function MyEventsPage() {
               )}
 
               <div style={{ marginTop: "15px", display: "flex", gap: "15px" }}>
-                <Link to={`/events/${event.id}/edit`} style={{ color: "#007bff", textDecoration: "none", fontSize: "0.9rem", fontWeight: "bold" }}>Editar</Link>
-                <button 
-                  onClick={() => handleDelete(event.id)}
-                  style={{ background: "none", border: "none", padding: 0, color: "#c53030", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold" }}
-                >
-                  Excluir
-                </button>
-                <Link to={`/events/${event.id}`} style={{ color: "#666", textDecoration: "none", fontSize: "0.9rem" }}>Ver público</Link>
+                {event.status !== "cancelado" && (
+                  <Link to={`/events/${event.id}/edit`} style={{ color: "#007bff", textDecoration: "none", fontSize: "0.9rem", fontWeight: "bold" }}>Editar</Link>
+                )}
+                {event.status !== "cancelado" && (
+                  <button
+                    onClick={() => handleDelete(event.id)}
+                    style={{ background: "none", border: "none", padding: 0, color: "#c53030", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold" }}
+                  >
+                    Cancelar
+                  </button>
+                )}
+                {event.status === "aprovado" && (
+                  <Link to={`/events/${event.id}`} style={{ color: "#666", textDecoration: "none", fontSize: "0.9rem" }}>Ver público</Link>
+                )}
               </div>
             </div>
           </div>

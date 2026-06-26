@@ -148,6 +148,10 @@ export function createEvent(data: EventCreateRequest) {
   });
 }
 
+export function getMyEvent(id: number) {
+  return request<EventResponse>(`/events/me/${id}`);
+}
+
 export function getMyEvents(page = 1, per_page = 20) {
   return request<PaginatedResponse<EventResponse>>(
     `/events/me?page=${page}&per_page=${per_page}`,
@@ -161,10 +165,20 @@ export function updateEvent(id: number, data: EventUpdateRequest) {
   });
 }
 
-export function deleteEvent(id: number) {
-  return request<EventResponse>(`/events/${id}`, {
+export async function deleteEvent(id: number) {
+  const token = await SecureStore.getItemAsync("access_token");
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  const res = await fetch(`${API_BASE}/events/${id}`, {
     method: "DELETE",
+    headers,
   });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new ApiError(res.status, text);
+  }
 }
 
 // --- Upload ---

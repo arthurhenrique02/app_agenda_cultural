@@ -120,6 +120,18 @@ async def get_my_events(
     )
 
 
+@router.get("/me/{event_id}", response_model=EventResponse)
+async def get_my_event(
+    event_id: int,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db),
+) -> EventResponse:
+    """Return a single event owned by the authenticated user (any status)."""
+    return await event_service.get_my_event(
+        session, current_user, event_id=event_id
+    )
+
+
 @router.get("/{event_id}", response_model=PublicEventResponse)
 async def get_public_event(
     event_id: int,

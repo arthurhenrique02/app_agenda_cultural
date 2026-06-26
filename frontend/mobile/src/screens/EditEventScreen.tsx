@@ -16,7 +16,7 @@ export default function EditEventScreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.getEvent(id).then(setEvent).finally(() => setLoading(false));
+    api.getMyEvent(id).then(setEvent).finally(() => setLoading(false));
   }, [id]);
 
   async function handleSubmit(data: any) {

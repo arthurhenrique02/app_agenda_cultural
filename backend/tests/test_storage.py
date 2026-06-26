@@ -12,6 +12,7 @@ def storage() -> StorageService:
     """Create a StorageService instance with test config."""
     return StorageService(
         endpoint="http://localhost:8333",
+        public_url="http://localhost:8333",
         access_key="testaccesskey",
         secret_key="testsecretkey",
         bucket="test-bucket",
@@ -22,18 +23,20 @@ def test_storage_service_initializes_with_config() -> None:
     """StorageService stores endpoint, bucket, and credentials."""
     svc = StorageService(
         endpoint="http://s3:9000",
+        public_url="http://localhost:9000",
         access_key="mykey",
         secret_key="mysecret",
         bucket="my-bucket",
     )
     assert svc.bucket == "my-bucket"
-    assert svc.endpoint == "http://s3:9000"
+    assert svc.public_url == "http://localhost:9000"
 
 
 def test_storage_service_creates_s3_client() -> None:
     """StorageService creates a boto3 S3 client pointing at the configured endpoint."""
     svc = StorageService(
         endpoint="http://localhost:8333",
+        public_url="http://localhost:8333",
         access_key="ak",
         secret_key="sk",
         bucket="b",
@@ -46,6 +49,7 @@ def test_storage_service_passes_endpoint_to_boto3(mock_boto3: MagicMock) -> None
     """StorageService passes the endpoint_url to boto3 client constructor."""
     StorageService(
         endpoint="http://seaweed:8333",
+        public_url="http://localhost:8333",
         access_key="ak",
         secret_key="sk",
         bucket="mybucket",
@@ -65,7 +69,8 @@ def test_upload_file_calls_put_object(mock_boto3: MagicMock) -> None:
     mock_boto3.client.return_value = mock_client
 
     svc = StorageService(
-        endpoint="http://localhost:8333",
+        endpoint="http://seaweed:8333",
+        public_url="http://localhost:8333",
         access_key="ak",
         secret_key="sk",
         bucket="test-bucket",
@@ -95,6 +100,7 @@ def test_delete_file_calls_delete_object(mock_boto3: MagicMock) -> None:
 
     svc = StorageService(
         endpoint="http://localhost:8333",
+        public_url="http://localhost:8333",
         access_key="ak",
         secret_key="sk",
         bucket="test-bucket",
@@ -115,6 +121,7 @@ def test_upload_returns_public_url(mock_boto3: MagicMock) -> None:
 
     svc = StorageService(
         endpoint="http://seaweed:8333",
+        public_url="http://localhost:8333",
         access_key="ak",
         secret_key="sk",
         bucket="agenda-cultural",
@@ -126,7 +133,7 @@ def test_upload_returns_public_url(mock_boto3: MagicMock) -> None:
         content_type="image/png",
     )
 
-    assert url == "http://seaweed:8333/agenda-cultural/events/photo.png"
+    assert url == "http://localhost:8333/agenda-cultural/events/photo.png"
 
 
 def test_default_storage_instance_uses_settings() -> None:

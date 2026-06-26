@@ -12,11 +12,12 @@ class StorageService:
         self,
         *,
         endpoint: str,
+        public_url: str,
         access_key: str,
         secret_key: str,
         bucket: str,
     ) -> None:
-        self.endpoint = endpoint
+        self.public_url = public_url
         self.bucket = bucket
         self.client = boto3.client(
             "s3",
@@ -39,7 +40,7 @@ class StorageService:
             Body=file_data,
             ContentType=content_type,
         )
-        return f"{self.endpoint}/{self.bucket}/{key}"
+        return f"{self.public_url}/{self.bucket}/{key}"
 
     def delete_file(self, *, key: str) -> None:
         """Delete a file from S3 by key."""
@@ -53,6 +54,7 @@ def get_storage_service() -> StorageService:
     """Create a StorageService instance from app settings."""
     return StorageService(
         endpoint=settings.storage_endpoint,
+        public_url=settings.storage_public_url,
         access_key=settings.storage_access_key,
         secret_key=settings.storage_secret_key,
         bucket=settings.storage_bucket,

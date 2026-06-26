@@ -200,6 +200,19 @@ async def _get_owned_event_or_raise(
     return event
 
 
+async def get_my_event(
+    session: AsyncSession,
+    current_user: User,
+    *,
+    event_id: int,
+) -> EventResponse:
+    """Return a single event owned by the authenticated user (any status)."""
+    event = await _get_owned_event_or_raise(
+        session, event_id=event_id, current_user=current_user
+    )
+    return EventResponse.model_validate(event)
+
+
 async def update_my_event(
     session: AsyncSession,
     current_user: User,
