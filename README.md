@@ -127,14 +127,25 @@ Definidas em `backend/.env` (veja `.env.example`):
 | Variável | Descrição |
 |---|---|
 | `SECRET_KEY` | Chave de assinatura JWT |
-| `DATABASE_URL` | Conexão Postgres (asyncpg) |
+| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | Credenciais e nome do banco (lidos pelo container `db` no compose) |
+| `DATABASE_URL` | Conexão Postgres (asyncpg) — deve bater com usuário/senha/banco acima |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | Validade do access token (padrão 15) |
 | `REFRESH_TOKEN_EXPIRE_DAYS` | Validade do refresh token (padrão 7) |
 | `STORAGE_ENDPOINT` / `STORAGE_PUBLIC_URL` | Endpoint interno e URL pública do SeaweedFS |
 | `STORAGE_ACCESS_KEY` / `STORAGE_SECRET_KEY` / `STORAGE_BUCKET` | Credenciais e bucket S3 |
 | `ADMIN_DEFAULT_PASSWORD` | Senha do admin criado no seed |
 
-**Admin inicial** (criado pelo seed): `admin@agendacultural.com` / senha = `ADMIN_DEFAULT_PASSWORD`.
+### Login padrão do admin
+
+Criado automaticamente pelo seed na primeira execução:
+
+| Campo | Valor |
+|---|---|
+| E-mail | `admin@agendacultural.com` |
+| Senha | valor de `ADMIN_DEFAULT_PASSWORD` (padrão do `.env.example`: `admin123`) |
+| Role | `admin` |
+
+> Troque `ADMIN_DEFAULT_PASSWORD` antes de qualquer deploy.
 
 ## Testes
 
